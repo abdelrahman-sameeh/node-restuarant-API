@@ -38,7 +38,8 @@ const productSchema = mongoose.Schema({
    ratingAvg: {
       type: Number,
       default: 0
-   }
+   },
+   price: Number
 })
 
 productSchema.post('init', (doc) => {

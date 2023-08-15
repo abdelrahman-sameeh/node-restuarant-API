@@ -18,19 +18,21 @@ const userSchema = mongoose.Schema({
    },
    role: {
       type: String,
-      enum:['user', 'admin'],
+      enum: ['user', 'admin'],
       default: 'user',
    },
-   favorites:[
+   favorites: [
       {
          type: mongoose.Schema.ObjectId,
-         ref: 'Products'
+         ref: 'Product'
       }
    ],
-   changePasswordAt: Date
+   changePasswordAt: Date,
 });
 
-const User = mongoose.model('user', userSchema);
+
+
+const User = mongoose.model('User', userSchema);
 
 
 module.exports = User;

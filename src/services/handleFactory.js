@@ -3,13 +3,13 @@ const ApiFeature = require("../utils/ApiFeature");
 const ApiError = require("../utils/ApiError");
 
 
-exports.getListOfItems = (Model, modelName) =>
-   expressAsyncHandler(async (req, res, next) => {
-      const response = await Model.create(req.body)
-      res.status(200).json({
-         data: response
-      })
-   })
+// exports.getListOfItems = (Model, modelName) =>
+//    expressAsyncHandler(async (req, res, next) => {
+//       const response = await Model.create(req.body)
+//       res.status(200).json({
+//          data: response
+//       })
+//    })
 
 
 
@@ -43,6 +43,7 @@ exports.getListOfItems = (Model, modelName) =>
       }
 
       res.status(200).json({
+         results: response.length,
          pagination: paginationResults,
          data: response
       })
