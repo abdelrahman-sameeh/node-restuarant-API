@@ -23,18 +23,18 @@ if (process.env.NODE_ENV === 'dev') {
 console.log('i\'m in ' + process.env.NODE_ENV + ' mode');
 
 
-
-
 const authRoute = require('./src/routes/authRoute')
 const productRoute = require('./src/routes/productRoute')
 const userRoute = require('./src/routes/userRoute')
 const cartRoute = require('./src/routes/cartRoute')
+const addressRoute = require('./src/routes/addressRoute')
 
 
 app.use('/api/v1', authRoute)
 app.use('/api/v1', productRoute)
 app.use('/api/v1', userRoute)
 app.use('/api/v1', cartRoute)
+app.use('/api/v1', addressRoute)
 
 
 

@@ -21,7 +21,7 @@ const cartSchema = mongoose.Schema({
 
 
 cartSchema.pre(/^find/, function (next) {
-   this.populate({ path: 'user', select: 'name' })
+   this.populate({ path: 'user', select: 'name email' })
    next()
 })
 

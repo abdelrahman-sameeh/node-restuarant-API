@@ -3,14 +3,13 @@ const ApiFeature = require("../utils/ApiFeature");
 const ApiError = require("../utils/ApiError");
 
 
-// exports.getListOfItems = (Model, modelName) =>
-//    expressAsyncHandler(async (req, res, next) => {
-//       const response = await Model.create(req.body)
-//       res.status(200).json({
-//          data: response
-//       })
-//    })
-
+exports.createItem = (Model, modelName) =>
+   expressAsyncHandler(async (req, res, next) => {
+      const response = await Model.create(req.body);
+      res.status(200).json({
+         data: response
+      })
+   })
 
 
 
@@ -54,7 +53,6 @@ exports.getListOfItems = (Model, modelName) =>
 exports.getOneItem = (Model, modelName) =>
    expressAsyncHandler(async (req, res, next) => {
       const { id } = req.params;
-      console.log(id);
       const response = await Model.findById(id);
       if (!response) {
          return res.status(404).json({
@@ -68,7 +66,6 @@ exports.getOneItem = (Model, modelName) =>
 
 
 
-
 exports.deleteOneItem = (Model, modelName) =>
    expressAsyncHandler(async (req, res, next) => {
       const { id } = req.params;
@@ -77,10 +74,9 @@ exports.deleteOneItem = (Model, modelName) =>
          return next(new ApiError(`no ${modelName} matches this id => ${id}`, 404))
       }
       res.status(200).json({
-         msg: `${modelName} Deleted successfully`
+         msg: `${modelName} Deleted successfully`,
       })
    })
-
 
 
 
@@ -92,6 +88,7 @@ exports.updateOneItem = (Model, modelName) =>
          return next(new ApiError(`no ${modelName} matches this id => ${id}`, 404))
       }
       res.status(200).json({
-         msg: `${modelName} Deleted successfully`
+         msg: `${modelName} Modified successfully`,
+         data: response
       })
    })
