@@ -39,8 +39,9 @@ const productSchema = mongoose.Schema({
       type: Number,
       default: 0
    },
-   price: Number
-})
+   price: Number,
+   count: Number
+}, {timestamps: true})
 
 productSchema.post('init', (doc) => {
    if (doc.image) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AuthService = require('../services/AuthService');
-const { getAllAddresses, addNewAddress, deleteAddress, updateAddress, getAddress } = require('../services/AddressService');
+const { getAllAddresses, addNewAddress, deleteAddress, updateAddress, getAddress, getLoggedUserAddresses } = require('../services/AddressService');
 const { updateAddressValidator, createAddressValidator } = require('../validator/addressValidator');
 
 
@@ -22,6 +22,11 @@ router.route('/address')
 router.use(
    AuthService.protect,
    AuthService.allowTo('user', 'admin')
+)
+
+router.get(
+   '/userAddresses',
+   getLoggedUserAddresses
 )
 
 

@@ -8,7 +8,11 @@ const cartSchema = mongoose.Schema({
             ref: 'Products'
          },
          count: Number,
-         price: Number
+         price: Number,
+         size: {
+            type: String,
+            enum: ['small', 'medium', 'large']
+         }
       }
    ],
    total: Number,
@@ -17,7 +21,7 @@ const cartSchema = mongoose.Schema({
       type: mongoose.Schema.ObjectId,
       ref: 'User'
    }
-})
+}, {timestamps: true})
 
 
 cartSchema.pre(/^find/, function (next) {

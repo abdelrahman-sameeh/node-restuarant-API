@@ -5,16 +5,17 @@ const app = express();
 const ApiError = require('./src/utils/ApiError');
 const { globalHandleError } = require('./src/middleware/errorMiddleware');
 const { connectWithDatabase } = require('./src/middleware/databaseConnectionMiddleware');
+const { mountRoutes } = require('./src/routes');
 require('dotenv').config()
 
-
+// to use images in app
 app.use('/src/uploads', express.static(path.join(__dirname, 'src', 'uploads')))
 
-
-
+// connecting with database
 connectWithDatabase()
 
-app.use(express.json())
+
+app.use(express.json({limit: '20kb'}))
 
 
 if (process.env.NODE_ENV === 'dev') {
@@ -23,28 +24,17 @@ if (process.env.NODE_ENV === 'dev') {
 console.log('i\'m in ' + process.env.NODE_ENV + ' mode');
 
 
-const authRoute = require('./src/routes/authRoute')
-const productRoute = require('./src/routes/productRoute')
-const userRoute = require('./src/routes/userRoute')
-const cartRoute = require('./src/routes/cartRoute')
-const addressRoute = require('./src/routes/addressRoute')
-
-
-app.use('/api/v1', authRoute)
-app.use('/api/v1', productRoute)
-app.use('/api/v1', userRoute)
-app.use('/api/v1', cartRoute)
-app.use('/api/v1', addressRoute)
+// mount route
+mountRoutes(app)
 
 
 
+// handle all routes that not exist
 app.all('*', (req, res, next) => {
    return next(new ApiError(`can't find this route ${req.originalUrl}`, 404));
 })
 
-
-
-
+// global error function
 app.use(globalHandleError)
 
 

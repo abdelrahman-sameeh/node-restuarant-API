@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
       }
    ],
    changePasswordAt: Date,
-});
+}, {timestamps: true});
 
 
 

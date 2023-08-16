@@ -15,11 +15,7 @@ exports.addProductToCart = expressAsyncHandler(async (req, res, next) => {
    let cart = await Cart.findOne({ user: req.user._id })
 
 
-   const product = await Product.findById(req.body.id)
-   if (!product) {
-      return next(new ApiError('no product match this id', 404))
-   }
-
+   const product = req.product
 
    // 1- check if user have cart
    if (cart) {
@@ -27,21 +23,23 @@ exports.addProductToCart = expressAsyncHandler(async (req, res, next) => {
       // if (true) > modify (else) add in listItems
       const cartItems = cart.cartItems
 
-      const checkProductInCartItems = cartItems.some(item => item.product.toString() === req.body.id.toString())
+      const checkProductInCartItems = cartItems.some(item => (item.product.toString() === req.body.id.toString() && item.size == req.body.size))
       if (checkProductInCartItems) {
          const newCartItems = cartItems.map(item => {
-            if (item.product.toString() === req.body.id.toString()) {
+            if (item.product.toString() === req.body.id.toString() && item.size == req.body.size) {
                item = {
                   product: item.product,
                   count: +item.count + +req.body.count,
-                  price: (+item.count * +product.price) + (+req.body.count * +product.price),
-                  _id: item._id
+                  price: +product.price,
+                  _id: item._id,
+                  size: req.body.size
                }
             }
             return item
          })
+
          cart.cartItems = newCartItems;
-         let total = newCartItems.map(item => item.price).reduce((acc, curr) => acc + curr)
+         let total = newCartItems.map(item => item.price * item.count).reduce((acc, curr) => acc + curr)
          cart.total = total
          await cart.save()
 
@@ -49,11 +47,12 @@ exports.addProductToCart = expressAsyncHandler(async (req, res, next) => {
          cartItems.push({
             product: req.body.id,
             count: req.body.count,
-            price: +req.body.count * +product.price
+            price: +product.price,
+            size: req.body.size
          })
          cart.cartItems = cartItems
 
-         let total = cartItems.map(item => item.price).reduce((acc, curr) => acc + curr)
+         let total = cartItems.map(item => item.price * item.count).reduce((acc, curr) => acc + curr)
          cart.total = total
 
          await cart.save()
@@ -70,7 +69,8 @@ exports.addProductToCart = expressAsyncHandler(async (req, res, next) => {
             {
                product: req.body.id,
                count: req.body.count,
-               price: +req.body.count * +product.price
+               price: +product.price,
+               size: req.body.size
             }
          ],
          user: req.user._id,

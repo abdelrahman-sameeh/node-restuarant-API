@@ -25,7 +25,7 @@ const addressSchema = mongoose.Schema({
       type: String,
       trim: true
    }
-})
+}, {timestamps: true})
 
 addressSchema.pre(/^find/, function (next) {
    this.populate({ path: 'user', select: 'name' });
