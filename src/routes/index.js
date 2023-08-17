@@ -5,6 +5,7 @@ exports.mountRoutes = (app) => {
    const cartRoute = require('./cartRoute')
    const addressRoute = require('./addressRoute')
    const orderRoute = require('./orderRoute')
+   const couponRoute = require('./couponRoute')
 
 
    app.use('/api/v1', authRoute)
@@ -13,4 +14,5 @@ exports.mountRoutes = (app) => {
    app.use('/api/v1', cartRoute)
    app.use('/api/v1', addressRoute)
    app.use('/api/v1', orderRoute)
+   app.use('/api/v1', couponRoute)
 }

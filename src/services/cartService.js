@@ -4,6 +4,7 @@ const Cart = require("../model/cartModel");
 const Product = require("../model/productModel");
 const ApiError = require("../utils/ApiError");
 const handleFactory = require("./handleFactory");
+const Coupon = require("../model/couponModel");
 
 
 
@@ -22,6 +23,8 @@ exports.addProductToCart = expressAsyncHandler(async (req, res, next) => {
       // --check if have product in listItems 
       // if (true) > modify (else) add in listItems
       const cartItems = cart.cartItems
+
+      cart.totalAfterDiscount = undefined;
 
       const checkProductInCartItems = cartItems.some(item => (item.product.toString() === req.body.id.toString() && item.size == req.body.size))
       if (checkProductInCartItems) {
@@ -140,3 +143,40 @@ exports.deleteProductFromCartItems = expressAsyncHandler(async (req, res, next) 
 // @route   GET  /api/v1/allCart
 // @access  private => admin   
 exports.getAllCarts = handleFactory.getListOfItems(Cart, 'cart')
+
+
+
+
+// @desc    apply coupon to logged cart
+// @route   PUT  /api/v1/applyCoupon/[couponName]
+// @access  private => user  
+exports.applyCoupon = expressAsyncHandler(async (req, res, next) => {
+   // 1- check if cart is exist
+   const cart = await Cart.findOne({ user: req.user._id });
+   if (!cart) {
+      return next(new ApiError('no cart for this user', 404));
+   }
+
+   // check if coupon is exist and not expired
+   const coupon = await Coupon.findOne({ name: req.params.name })
+
+   if (new Date(coupon.expire).getTime() < Date.now()) {
+      return next(new ApiError('this coupon is already expired', 400))
+   }
+
+   // 3- update total price in cart 
+   const totalAfterDiscount = cart.total - (cart.total * coupon.discount / 100)
+
+   const response = await Cart.findOneAndUpdate(
+      { user: req.user._id },
+      {
+         totalAfterDiscount
+      },
+      { new: true }
+   );
+
+   res.status(200).json({
+      data: response
+   })
+
+})

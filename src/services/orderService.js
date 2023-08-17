@@ -35,12 +35,14 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
    const orderItems = cart.cartItems;
 
 
+   let totalPrice = cart.totalAfterDiscount || cart.total
+
    // 2- create order 
    const order = await Order.create({
       ...req.body,
       orderItems,
       user: req.user._id,
-      totalPrice: cart.total
+      totalPrice
    });
 
    if (!order) {
