@@ -4,7 +4,7 @@ const addressSchema = mongoose.Schema({
    user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User'
-   },
+   }, 
    alias: {
       type: String,
       trim: true
