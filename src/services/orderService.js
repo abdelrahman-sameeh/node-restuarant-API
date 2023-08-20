@@ -7,6 +7,8 @@ const Product = require("../model/productModel");
 const ApiFeature = require("../utils/ApiFeature");
 const qr = require("qrcode");
 
+const fs = require("fs");
+
 // @desc      get list of orders
 // @route     GET  /api/v1/order
 // @access    Private => (admin)
@@ -44,14 +46,28 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
     return next(new ApiError("something went wrong, try to order later", 400));
   }
 
+
+
   // 3- generate qrcode
   const serverPath = process.cwd();
+
+  let directory_name = `${serverPath}`;
+
+  // Function to get current filenames
+  // in directory
+  let filenames = fs.readdirSync(directory_name);
+
+  console.log("\nFilenames in directory:");
+  filenames.forEach((file, index) => {
+    console.log(`File ${index}:`, file);
+  });
+
   try {
     await qr.toFile(
       `${serverPath}/src/uploads/QRs/order-${order._id}.png`,
       `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`
     );
-    order.qrImage =  `order-${order._id}.png`
+    order.qrImage = `order-${order._id}.png`;
     await order.save();
   } catch (err) {
     console.log(err);
