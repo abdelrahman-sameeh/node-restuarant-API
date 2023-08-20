@@ -11,12 +11,14 @@ const Order = require("../model/orderModel");
 // @access  protect (admin)
 exports.addOrderToDelivery = expressAsyncHandler(async (req, res, next) => {
   // 1- get delivery user
-  const user = await User.findOne({ _id: req.body.user });
+  const user = await User.findById(req.body.user);
+
   // 2- check if delivery have same order
   const order = await Delivery.findOne({ order: req.body.order });
   if (order) {
     return next(new ApiError("order in delivery status already", 400));
   }
+
   // 3- add order to delivery user
   let response;
   if (user.role === "delivery") {
