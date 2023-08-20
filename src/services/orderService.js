@@ -51,14 +51,14 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   // 3- generate qrcode
   const serverPath = process.cwd();
 
-  let directory_name = `${serverPath}`;
   console.log(serverPath);
+  let directory_name = `${serverPath}/src`;
 
   // Function to get current filenames
   // in directory
   let filenames = fs.readdirSync(directory_name);
 
-  console.log("\nFilenames in directory:");
+  console.log("Filenames in directory:");
   filenames.forEach((file, index) => {
     console.log(`File ${index}:`, file);
   });
