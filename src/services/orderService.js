@@ -45,7 +45,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   }
 
   // 3- generate qrcode
-  const serverPath = __dirname.split("/src")[0];
+  const serverPath = process.cwd();
   try {
     await qr.toFile(
       `${serverPath}/src/uploads/QRs/order-${order._id}.png`,
