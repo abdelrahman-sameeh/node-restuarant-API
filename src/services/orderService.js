@@ -45,19 +45,17 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   }
 
   // 3- generate qrcode
-  const serverPath = __dirname.split("/services")[0];
-  console.log(serverPath);
-  console.log(`${serverPath}/uploads/QRs/order-${order._id}.png`);
-  // try {
-  //   await qr.toFile(
-  //     `${serverPath}/uploads/QRs/order-${order._id}.png`,
-  //     `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`
-  //   );
-  //   order.qrImage =  `order-${order._id}.png`
-  //   await order.save();
-  // } catch (err) {
-  //   console.log(err);
-  // }
+  const serverPath = __dirname.split("/src")[0];
+  try {
+    await qr.toFile(
+      `${serverPath}/src/uploads/QRs/order-${order._id}.png`,
+      `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`
+    );
+    order.qrImage =  `order-${order._id}.png`
+    await order.save();
+  } catch (err) {
+    console.log(err);
+  }
 
   // // 4- update product sold
   // orderItems.map(async (item) => {
