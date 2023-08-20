@@ -52,6 +52,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   const serverPath = process.cwd();
 
   let directory_name = `${serverPath}`;
+  console.log(serverPath);
 
   // Function to get current filenames
   // in directory
