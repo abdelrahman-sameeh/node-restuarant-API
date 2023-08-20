@@ -27,7 +27,7 @@ console.log("i'm in " + process.env.NODE_ENV + " mode");
 mountRoutes(app);
 
 
-app.get('/', (req, res, next)=>res.send(`welcome in my api use ${process.env.BASE_URL}/api/v1/products to show meals`))
+app.get('/', (req, res, next)=>res.send(`welcome in my api use ${process.env.BASE_URL}api/v1/products to show meals`))
 
 // handle all routes that not exist
 app.all("*", (req, res, next) => {
