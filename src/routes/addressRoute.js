@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const AuthService = require('../services/AuthService');
-const { getAllAddresses, addNewAddress, deleteAddress, updateAddress, getAddress, getLoggedUserAddresses } = require('../services/AddressService');
+const AuthService = require('../services/authService');
+const { getAllAddresses, addNewAddress, deleteAddress, updateAddress, getAddress, getLoggedUserAddresses } = require('../services/addressService');
 const { updateAddressValidator, createAddressValidator } = require('../validator/addressValidator');
 
 

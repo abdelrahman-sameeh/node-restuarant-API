@@ -1,5 +1,5 @@
 const express = require('express');
-const AuthService = require('../services/AuthService');
+const AuthService = require('../services/authService');
 const { addProductToCart, getLoggedUserCart, deleteProductFromCartItems, getAllCarts, applyCoupon } = require('../services/cartService');
 const { addProductToCartValidator } = require('../validator/cartValidator');
 

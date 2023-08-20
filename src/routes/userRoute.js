@@ -1,6 +1,6 @@
 const express = require('express');
 const { addProductToFavorite, deleteProductFromFavorite, getLoggedUser } = require('../services/userService');
-const AuthService = require('../services/AuthService');
+const AuthService = require('../services/authService');
 const { addProductToFavoriteValidator, removeProductFromFavoriteValidator } = require('../validator/userValidator');
 
 const router = express.Router();

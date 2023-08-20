@@ -1,5 +1,5 @@
 const express = require('express')
-const { register, login, changePassword } = require('../services/AuthService')
+const { register, login, changePassword } = require('../services/authService')
 const router = express.Router()
 const {registerValidator, loginValidator} =require('../validator/authValidator')
 

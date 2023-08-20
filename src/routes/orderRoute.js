@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router()
-const AuthService = require('../services/AuthService');
+const AuthService = require('../services/authService');
 const { createCashOrder, getAllOrders, getSpecificOrder, getLoggedUserOrders, deleteOrder } = require('../services/orderService');
 const { createOrderValidator } = require('../validator/orderValidator');
 
