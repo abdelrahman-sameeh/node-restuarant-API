@@ -2,7 +2,6 @@ const expressAsyncHandler = require("express-async-handler");
 const Delivery = require("../model/deliveryModel");
 const User = require("../model/userModel");
 const ApiError = require("../utils/ApiError");
-const jimp = require("jimp");
 const qrcode = require("qrcode");
 const Order = require("../model/orderModel");
 
@@ -27,7 +26,8 @@ exports.addOrderToDelivery = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json(response);
 });
 
-// @desc    scan
+
+// @desc    Change order delivery status
 // @route   GET  /api/v1/delivery
 // @access  protect (admin)
 exports.changeOrderDeliveryStatus = async (req, res, next) => {

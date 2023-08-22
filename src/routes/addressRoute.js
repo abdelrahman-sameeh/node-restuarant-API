@@ -26,14 +26,27 @@ router
     addNewAddress
   );
 
-router.use(AuthService.protect, AuthService.allowTo("user", "admin"));
 
-router.get("/userAddresses", getLoggedUserAddresses);
+router.get(
+  "/userAddresses",
+  AuthService.protect,
+  AuthService.allowTo("user", "admin"),
+  getLoggedUserAddresses
+);
 
 router
   .route("/address/:id")
-  .get(getAddress)
-  .put(updateAddressValidator, updateAddress)
-  .delete(deleteAddress);
+  .get(AuthService.protect, AuthService.allowTo("user", "admin"), getAddress)
+  .put(
+    AuthService.protect,
+    AuthService.allowTo("user", "admin"),
+    updateAddressValidator,
+    updateAddress
+  )
+  .delete(
+    AuthService.protect,
+    AuthService.allowTo("user", "admin"),
+    deleteAddress
+  );
 
 module.exports = router;

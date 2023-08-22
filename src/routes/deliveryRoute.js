@@ -11,11 +11,13 @@ router.post(
 )
 
 
-router.post(
+router.get(
   '/orderIsDelivered/:id',
-  AuthService.protect,
-  AuthService.allowTo('admin', 'delivery'),
+  // AuthService.protect,
+  // AuthService.allowTo('admin', 'delivery'),
   changeOrderDeliveryStatus
 )
+
+
 
 module.exports = router

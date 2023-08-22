@@ -15,5 +15,5 @@ exports.mountRoutes = (app) => {
   app.use("/api/v1", addressRoute);
   app.use("/api/v1", orderRoute);
   app.use("/api/v1", couponRoute);
-  app.use("/api/v1", deliveryRoute);
+  app.use("/api/v1/delivery", deliveryRoute);
 };

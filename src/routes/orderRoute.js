@@ -7,8 +7,8 @@ const { createOrderValidator } = require('../validator/orderValidator');
 
 router.route('/order')
    .get(
-      AuthService.protect,
-      AuthService.allowTo('admin'),
+      // AuthService.protect,
+      // AuthService.allowTo('admin'),
       getAllOrders
    )
 

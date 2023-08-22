@@ -7,8 +7,6 @@ const Product = require("../model/productModel");
 const ApiFeature = require("../utils/ApiFeature");
 const qr = require("qrcode");
 
-const fs = require("fs");
-
 // @desc      get list of orders
 // @route     GET  /api/v1/order
 // @access    Private => (admin)
@@ -46,49 +44,48 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
     return next(new ApiError("something went wrong, try to order later", 400));
   }
 
+  /* 
+  3- generate qrcode
+  @desc   add image to a base 64 url without upload it to file system
+          after scan qrcode => display link   orderIsDelivered/:id  
+          when go to this trigger action  @route  GET orderIsDelivered/:id  
+  */
+  await qr.toDataURL(
+    `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`,
+    async (err, url) => {
+      order.qrImage = url;
+      await order.save();
+    }
+  );
 
+  // // another solution but in this solution we upload file to server
+  // const serverPath = process.cwd();
+  // try {
+  //   await qr.toFile(
+  //     `${serverPath}/src/uploads/QRs/order-${order._id}.png`,
+  //     `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`
+  //   );
+  //   order.qrImage = `order-${order._id}.png`;
+  //   await order.save();
+  // } catch (err) {
+  //   console.log(err);
+  // }
 
-  // 3- generate qrcode
-  const serverPath = process.cwd();
-
-  console.log(serverPath);
-  let directory_name = `${serverPath}/src/uploads/QRs`;
-
-  // Function to get current filenames
-  // in directory
-  let filenames = fs.readdirSync(directory_name);
-
-  console.log("Filenames in directory:");
-  filenames.forEach((file, index) => {
-    console.log(`File ${index}:`, file);
+  // 4- update product sold
+  orderItems.map(async (item) => {
+    await Product.findOneAndUpdate(
+      { _id: item.product },
+      {
+        $inc: { sold: item.count },
+      },
+      { new: true }
+    );
   });
 
-  try {
-    await qr.toFile(
-      `${serverPath}/src/uploads/QRs/order-${order._id}.png`,
-      `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`
-    );
-    order.qrImage = `order-${order._id}.png`;
-    await order.save();
-  } catch (err) {
-    console.log(err);
-  }
+  // 5- if order created => delete cart
+  // await Cart.findOneAndDelete({ user: req.user._id });
 
-  // // 4- update product sold
-  // orderItems.map(async (item) => {
-  //   await Product.findOneAndUpdate(
-  //     { _id: item.product },
-  //     {
-  //       $inc: { sold: item.count },
-  //     },
-  //     { new: true }
-  //   );
-  // });
-
-  // // 5- if order created => delete cart
-  // // await Cart.findOneAndDelete({ user: req.user._id });
-
-  // // res.status(200).json(order);
+  res.status(200).json(order);
 });
 
 // @desc    get logged user orders
