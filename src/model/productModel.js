@@ -48,14 +48,14 @@ const productSchema = mongoose.Schema(
 
 productSchema.post("init", (doc) => {
   if (doc.image) {
-    const image = `${process.env.BASE_URL}/products/${doc.image}`;
+    const image = `${process.env.BASE_URL}/src/uploads/products/${doc.image}`;
     doc.image = image;
   }
 });
 
 productSchema.post("save", (doc) => {
   if (doc.image) {
-    const image = `${process.env.BASE_URL}/products/${doc.image}`;
+    const image = `${process.env.BASE_URL}/src/uploads/products/${doc.image}`;
     doc.image = image;
   }
 });
