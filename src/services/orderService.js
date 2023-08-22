@@ -51,7 +51,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
           when go to this trigger action  @route  GET orderIsDelivered/:id  
   */
   await qr.toDataURL(
-    `${process.env.BASE_URL}/api/v1/delivery/orderIsDelivered/${order._id}`,
+    `${process.env.BASE_URL}api/v1/delivery/orderIsDelivered/${order._id}`,
     async (err, url) => {
       order.qrImage = url;
       await order.save();
