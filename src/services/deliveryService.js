@@ -2,8 +2,8 @@ const expressAsyncHandler = require("express-async-handler");
 const Delivery = require("../model/deliveryModel");
 const User = require("../model/userModel");
 const ApiError = require("../utils/ApiError");
-const qrcode = require("qrcode");
 const Order = require("../model/orderModel");
+const crypto = require("crypto");
 
 // @desc    add order to user delivery
 // @route   POST  /api/v1/delivery
@@ -28,16 +28,33 @@ exports.addOrderToDelivery = expressAsyncHandler(async (req, res, next) => {
 
 
 // @desc    Change order delivery status
-// @route   GET  /api/v1/delivery
+// @route   GET  /api/v1/scanQRcodeOrder/:id
 // @access  protect (admin)
-exports.changeOrderDeliveryStatus = async (req, res, next) => {
+exports.scanQRcodeOrder = async (req, res, next) => {
+  // 1- get SSH from body and check if user has role delivery or not
+  const SSH = crypto.createHash("sha512").update(req.body.SSH).digest("binary");
+  const user = await User.findOne({ SSH });
+
+  if (!user || user.role !== "delivery" ) {
+    return next(new ApiError("the role of this user not delivery"));
+  }
   const orderId = req.params.id;
-  const response = await Order.findByIdAndUpdate(orderId, {
-    isDelivered: true,
-    deliveredAt: Date.now(),
-    isPaid: true,
-    paidAt: Date.now(),
-  });
+
+  // 2- check if this order for this delivery or not ---> if (true) update order status
+  const order = await Delivery.findOne({ order: orderId, user: user._id });
+  if (!order) {
+    return next(new ApiError("This delivery have no access for this user "));
+  }
+
+  const response = await Order.findOneAndUpdate(
+    { _id: orderId },
+    {
+      isDelivered: true,
+      deliveredAt: Date.now(),
+      isPaid: true,
+      paidAt: Date.now(),
+    }
+  );
 
   if (!response) {
     return next(

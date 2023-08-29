@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const cors = require('cors')
+const cors = require("cors");
 
 // const { initializeApp } = require("@firebase/app");
 // const { firebaseConfig, storage } = require("./src/utils/firebase");
@@ -17,17 +17,16 @@ const {
 } = require("./src/middleware/databaseConnectionMiddleware");
 const { mountRoutes } = require("./src/routes");
 
-
 // to make uploads a static file
 app.use("/src/uploads", express.static(path.join(__dirname, "src", "uploads")));
 
 // to set other client to access data
-app.use(cors())
+app.use(cors());
 
 // connecting with database
 connectWithDatabase();
 
-app.use(express.json({ limit: "20kb" }));
+app.use(express.json({ limit: "50kb" }));
 
 if (process.env.NODE_ENV === "dev") {
   app.use(morgan("dev"));

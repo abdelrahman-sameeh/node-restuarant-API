@@ -3,7 +3,7 @@ const Order = require("../model/orderModel");
 const expressAsyncHandler = require("express-async-handler");
 const Cart = require("../model/cartModel");
 const ApiError = require("../utils/ApiError");
-const Product = require("../model/productModel");
+const Product = require("../model/mealModel");
 const ApiFeature = require("../utils/ApiFeature");
 const qr = require("qrcode");
 

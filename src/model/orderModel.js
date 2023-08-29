@@ -60,7 +60,7 @@ const orderSchema = mongoose.Schema(
 );
 
 orderSchema.pre(/^find/, function (next) {
-  this.populate({ path: "address", select: "city phone -user" })
+  this.populate({ path: "address"})
     .populate({ path: "user", select: "name email" })
     .populate({ path: "orderItems.product", select: "title price" });
 
@@ -68,20 +68,20 @@ orderSchema.pre(/^find/, function (next) {
 });
 
 
-// orderSchema.post("init", function (doc) {
-//   const qrImage = doc.qrImage
-//   if (doc) {
-//     doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
-//   }
-// });
+orderSchema.post("init", function (doc) {
+  const qrImage = doc.qrImage
+  if (doc) {
+    doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
+  }
+});
 
 
-// orderSchema.post("save", function (doc) {
-//   const qrImage = doc.qrImage
-//   if (doc) {
-//     doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
-//   }
-// });
+orderSchema.post("save", function (doc) {
+  const qrImage = doc.qrImage
+  if (doc) {
+    doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
+  }
+});
 
 
 const Order = mongoose.model("Order", orderSchema);

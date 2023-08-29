@@ -6,6 +6,7 @@ const {
   deleteProductFromCartItems,
   getAllCarts,
   applyCoupon,
+  updateCart,
 } = require("../services/cartService");
 const { addProductToCartValidator } = require("../validator/cartValidator");
 
@@ -20,11 +21,15 @@ router
     addProductToCart
   )
   .get(AuthService.protect, AuthService.allowTo("user"), getLoggedUserCart)
-  .delete(
-    AuthService.protect,
-    AuthService.allowTo("user"),
-    deleteProductFromCartItems
-  );
+  .put(AuthService.protect, AuthService.allowTo("user"), updateCart);
+
+
+router.delete(
+  "/cart/:id",
+  AuthService.protect,
+  AuthService.allowTo("user"),
+  deleteProductFromCartItems
+);
 
 router.get(
   "/allCarts",

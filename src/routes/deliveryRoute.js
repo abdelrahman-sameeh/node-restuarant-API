@@ -1,23 +1,18 @@
-const express = require('express')
-const router = express.Router()
-const AuthService = require('../services/authService')
-const { addOrderToDelivery, changeOrderDeliveryStatus } = require('../services/deliveryService')
+const express = require("express");
+const router = express.Router();
+const AuthService = require("../services/authService");
+const {
+  addOrderToDelivery,
+  scanQRcodeOrder,
+} = require("../services/deliveryService");
 
 router.post(
-  '/addOrderToDelivery',
+  "/addOrderToDelivery",
   AuthService.protect,
-  AuthService.allowTo('admin'),
+  AuthService.allowTo("admin"),
   addOrderToDelivery
-)
+);
 
+router.post("/scanQRcodeOrder/:id", scanQRcodeOrder);
 
-router.get(
-  '/orderIsDelivered/:id',
-  // AuthService.protect,
-  // AuthService.allowTo('admin', 'delivery'),
-  changeOrderDeliveryStatus
-)
-
-
-
-module.exports = router
+module.exports = router;
