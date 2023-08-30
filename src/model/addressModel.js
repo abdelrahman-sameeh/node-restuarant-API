@@ -1,38 +1,40 @@
 const { default: mongoose } = require("mongoose");
 
-const addressSchema = mongoose.Schema({
-   user: {
+const addressSchema = mongoose.Schema(
+  {
+    user: {
       type: mongoose.Schema.ObjectId,
-      ref: 'User'
-   }, 
-   alias: {
+      ref: "User",
+    },
+    alias: {
       type: String,
-      trim: true
-   },
-   details: {
+      trim: true,
+    },
+    details: {
       type: String,
-      trim: true
-   },
-   phone: {
+      trim: true,
+    },
+    phone: {
       type: String,
-      trim: true
-   },
-   city: {
+      trim: true,
+    },
+    city: {
       type: String,
-      trim: true
-   },
-   postalCode: {
+      trim: true,
+    },
+    postalCode: {
       type: String,
-      trim: true
-   }
-}, {timestamps: true})
+      trim: true,
+    },
+  },
+  { timestamps: true }
+);
 
 addressSchema.pre(/^find/, function (next) {
-   this.populate({ path: 'user', select: 'name' });
-   next()
-})
+  this.populate({ path: "user", select: "name" });
+  next();
+});
 
-
-const Address = mongoose.model('Address', addressSchema);
+const Address = mongoose.model("Address", addressSchema);
 
 module.exports = Address;

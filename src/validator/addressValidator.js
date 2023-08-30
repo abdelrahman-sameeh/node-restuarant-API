@@ -3,6 +3,7 @@ const User = require("../model/userModel");
 const {
   validationResultMiddleware,
 } = require("../middleware/validationResultMiddleware");
+const Address = require("../model/addressModel");
 
 exports.createAddressValidator = [
   // user => userId
@@ -22,7 +23,17 @@ exports.createAddressValidator = [
     .notEmpty()
     .withMessage("alias is required")
     .isLength({ min: 2 })
-    .withMessage("alias length must be more than 2 characters"),
+    .withMessage("alias length must be more than 2 characters")
+    .custom(async (value, { req }) => {
+      const address = await Address.findOne({
+        alias: value,
+        user: req.user._id,
+      });
+      if (address) {
+        throw "this address alias already exist, change it and resend";
+      }
+      return true;
+    }),
   check("details").notEmpty().withMessage("alias is required"),
   check("phone")
     .notEmpty()
@@ -54,7 +65,17 @@ exports.updateAddressValidator = [
     .notEmpty()
     .withMessage("alias is required")
     .isLength({ min: 2 })
-    .withMessage("alias length must be more than 2 characters"),
+    .withMessage("alias length must be more than 2 characters")
+    .custom(async (value, { req }) => {
+      const address = await Address.findOne({
+        alias: value,
+        user: req.user._id,
+      });
+      if (address) {
+        throw "this address alias already exist, change it and resend";
+      }
+      return true;
+    }),
   check("details").optional().notEmpty().withMessage("alias is required"),
   check("phone")
     .optional()

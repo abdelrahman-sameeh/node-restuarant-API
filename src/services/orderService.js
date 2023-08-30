@@ -51,8 +51,11 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
           when go to this trigger action  @route  GET orderIsDelivered/:id  
   */
   await qr.toDataURL(
-    `${process.env.BASE_URL}api/v1/delivery/orderIsDelivered/${order._id}`,
+    `${order._id}`,
     async (err, url) => {
+      if(err){
+        return next(new ApiError('qrcode generator image', 400))
+      }
       order.qrImage = url;
       await order.save();
     }
@@ -83,7 +86,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   });
 
   // 5- if order created => delete cart
-  // await Cart.findOneAndDelete({ user: req.user._id });
+  await Cart.findOneAndDelete({ user: req.user._id });
 
   res.status(200).json(order);
 });
