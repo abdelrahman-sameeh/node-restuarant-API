@@ -4,11 +4,11 @@ const expressAsyncHandler = require("express-async-handler");
 const Meal = require("../model/mealModel");
 
 exports.setFilterInBody = (req, res, next) => {
-  let filterObj = {};
+  let filter = {};
   if (req.params.mealId) {
-    filterObj.meal = req.params.mealId;
+    filter.meal = req.params.mealId;
   }
-  req.body.filterObj = filterObj;
+  req.body.filter = filter;
   next();
 };
 
@@ -37,8 +37,6 @@ exports.getListOfReviews = handleFactory.getListOfItems(Review, "review");
 
 exports.getOneReview = handleFactory.getOneItem(Review, "review");
 
-
-
 exports.updateOneReview = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
   if (req.file && req.file.filename) {
@@ -54,7 +52,6 @@ exports.updateOneReview = expressAsyncHandler(async (req, res, next) => {
   const ratingAvg = calcRatingAvg(reviews);
   const ratingQty = reviews.length;
   await Meal.findByIdAndUpdate(response.meal, { ratingAvg, ratingQty });
-  
 
   res.status(200).json({
     msg: `Review updated successfully`,

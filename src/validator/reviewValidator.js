@@ -88,7 +88,10 @@ exports.checkId = [
     })
     .custom(async (value, { req }) => {
       const review = await Review.findOne({ user: req.user._id, _id: value });
-      if (!review) {
+      if (
+        !review &&
+        (req.user.role === "user" || req.user.role === "delivery")
+      ) {
         throw "This review not belong to this user";
       }
       return true;
