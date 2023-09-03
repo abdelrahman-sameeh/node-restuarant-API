@@ -8,12 +8,13 @@ const {
   updateAddress,
   getAddress,
   getLoggedUserAddresses,
-  setUserIdInBody,
 } = require("../services/addressService");
 const {
   updateAddressValidator,
   createAddressValidator,
 } = require("../validator/addressValidator");
+const {setUserIdInBody} = require('../services/utility')
+
 
 router
   .route("/address")

@@ -14,7 +14,12 @@ const {
   checkMealIDValidator,
 } = require("../validator/mealValidator");
 const { setImageInBody } = require("../services/handleFactory");
+
+const reviewRoute = require("./reviewRoute");
+
 const router = express.Router();
+
+router.use("/meal/:mealId/review", reviewRoute);
 
 router
   .route("/meals")

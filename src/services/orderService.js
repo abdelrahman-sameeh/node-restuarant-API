@@ -6,6 +6,7 @@ const ApiError = require("../utils/ApiError");
 const Product = require("../model/mealModel");
 const ApiFeature = require("../utils/ApiFeature");
 const qr = require("qrcode");
+const Delivery = require("../model/deliveryModel");
 
 // @desc      get list of orders
 // @route     GET  /api/v1/order
@@ -50,16 +51,13 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
           after scan qrcode => display link   orderIsDelivered/:id  
           when go to this trigger action  @route  GET orderIsDelivered/:id  
   */
-  await qr.toDataURL(
-    `${order._id}`,
-    async (err, url) => {
-      if(err){
-        return next(new ApiError('qrcode generator image', 400))
-      }
-      order.qrImage = url;
-      await order.save();
+  await qr.toDataURL(`${order._id}`, async (err, url) => {
+    if (err) {
+      return next(new ApiError("qrcode generator image", 400));
     }
-  );
+    order.qrImage = url;
+    await order.save();
+  });
 
   // // another solution but in this solution we upload file to server
   // const serverPath = process.cwd();
@@ -94,30 +92,7 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
 // @desc    get logged user orders
 // @route   GET  /api/v1/userOrders
 // @access  private => user
-exports.getLoggedUserOrders = expressAsyncHandler(async (req, res, next) => {
-  const countDocument = await Order.find({ user: req.user._id });
-
-  const apiFeature = new ApiFeature(
-    Order.find({ user: req.user._id }),
-    req.query
-  );
-  apiFeature
-    .filter()
-    .limitFields()
-    .sort()
-    .search()
-    .pagination(countDocument.length);
-
-  const { mongooseQuery, paginationResults } = apiFeature;
-
-  const response = await mongooseQuery;
-
-  res.status(200).json({
-    results: response.length,
-    pagination: paginationResults,
-    data: response,
-  });
-});
+exports.getLoggedUserOrders = handleFactory.getListOfItems(Order, "order");
 
 // @desc    delete order
 // @route   DELETE  /api/v1/order/:id
@@ -132,7 +107,7 @@ exports.deleteOrder = expressAsyncHandler(async (req, res, next) => {
     return next(new ApiError("no order match this id"));
   }
   if (order) {
-    if (req.user.role === "user" && order.orderStatus !== "new") {
+    if (req.user.role === "user" && order.orderStatus !== "preparing") {
       return next(
         new ApiError(
           `you can't cancel this order, order status is ${order.orderStatus}`
@@ -146,14 +121,34 @@ exports.deleteOrder = expressAsyncHandler(async (req, res, next) => {
       await Product.findByIdAndUpdate(
         item.product._id,
         {
-          $inc: { sold: +item.count },
+          $inc: { sold: -item.count },
         },
         { new: true }
       );
     });
   }
+  // delete from delivery order
+  const deliveryOrder = await Delivery.findOne({ order: req.params.id });
+  if (deliveryOrder) {
+    await Delivery.findOneAndDelete({ order: req.params.id });
+  }
 
   res.status(200).json({
     msg: "Order deleted successfully",
+  });
+});
+
+// @desc    change order status
+// @route   PUT  /api/v1/order/:id
+// @access  private => (delivery, admin)
+exports.changeOrderStatus = expressAsyncHandler(async (req, res, next) => {
+  const order = await Order.findByIdAndUpdate(req.params.id, req.body);
+
+  if (!order) {
+    return next(new ApiError("Some thing went wrong", 400));
+  }
+
+  res.status(200).json({
+    message: "order status changed successfully",
   });
 });

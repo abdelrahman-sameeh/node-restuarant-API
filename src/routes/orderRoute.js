@@ -7,12 +7,13 @@ const {
   getSpecificOrder,
   getLoggedUserOrders,
   deleteOrder,
+  changeOrderStatus,
 } = require("../services/orderService");
 const { createOrderValidator } = require("../validator/orderValidator");
 
 router.route("/order").get(
-  // AuthService.protect,
-  // AuthService.allowTo('admin'),
+  AuthService.protect,
+  AuthService.allowTo('admin'),
   getAllOrders
 );
 
@@ -27,7 +28,12 @@ router
     AuthService.protect,
     AuthService.allowTo("admin", "user"),
     deleteOrder
-  );
+  )
+  .put(
+    AuthService.protect,
+    AuthService.allowTo("admin", "delivery"),
+    changeOrderStatus
+  )
 
 router.post(
   "/createCashOrder",

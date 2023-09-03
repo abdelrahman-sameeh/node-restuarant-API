@@ -31,7 +31,7 @@ const addressSchema = mongoose.Schema(
 );
 
 addressSchema.pre(/^find/, function (next) {
-  this.populate({ path: "user", select: "name" });
+  this.populate({ path: "user", select: "name email" });
   next();
 });
 

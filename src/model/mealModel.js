@@ -34,17 +34,10 @@ const mealSchema = mongoose.Schema(
         type: String
       }
     ],
-    reviews: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        rate: {
-          type: Number,
-          min: [1, "Minimum rating must be equal 1"],
-          max: [5, "Maximum rating must be equal 5"],
-        },
-      },
-    ],
+    ratingQty: {
+      type: Number,
+      default: 0,
+    },
     ratingAvg: {
       type: Number,
       default: 0,
@@ -74,6 +67,6 @@ mealSchema.post("save", (doc) => {
   }
 });
 
-const Product = mongoose.model("Meal", mealSchema);
+const Meal = mongoose.model("Meal", mealSchema);
 
-module.exports = Product;
+module.exports = Meal;

@@ -9,7 +9,7 @@ exports.mountRoutes = (app) => {
   const deliveryRoute = require("./deliveryRoute");
   const categoryRoute = require("./categoryRoute");
   const favoriteRoute = require("./favoriteRoute");
-
+  const reviewRoute = require("./reviewRoute");
 
   app.use("/api/v1", authRoute);
   app.use("/api/v1", mealRoute);
@@ -21,6 +21,5 @@ exports.mountRoutes = (app) => {
   app.use("/api/v1/delivery", deliveryRoute);
   app.use("/api/v1", categoryRoute);
   app.use("/api/v1", favoriteRoute);
-
-  
+  app.use("/api/v1/review", reviewRoute);
 };

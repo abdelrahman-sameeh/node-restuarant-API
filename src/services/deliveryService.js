@@ -4,38 +4,57 @@ const User = require("../model/userModel");
 const ApiError = require("../utils/ApiError");
 const Order = require("../model/orderModel");
 const crypto = require("crypto");
+const handleFactory = require("./handleFactory");
 
 // @desc    add order to user delivery
 // @route   POST  /api/v1/delivery
 // @access  protect (admin)
 exports.addOrderToDelivery = expressAsyncHandler(async (req, res, next) => {
-  // 1- get delivery user
-  const user = await User.findById(req.body.user);
-
-  // 2- check if delivery have same order
-  const order = await Delivery.findOne({ order: req.body.order });
-  if (order) {
-    return next(new ApiError("order in delivery status already", 400));
+  // 1- validation
+  if (!req.body.user) {
+    return next(new ApiError("user delivery id is required"));
+  }
+  if (!req.body.order) {
+    return next(new ApiError("order id is required"));
   }
 
-  // 3- add order to delivery user
+  // 2- get delivery user and order to check if these exist or not
+  const user = await User.findById(req.body.user);
+
+  if (!user) {
+    return next(new ApiError("No user match this id"));
+  }
+
+  const order = await Order.findById(req.body.order);
+  if (!order) {
+    return next(new ApiError("No order match this id"));
+  }
+  
+  // 3- set delivery user in order 
+  order.delivery = req.body.user;
+  await order.save()
+
+  // 4- delete order from all deliveries
+  await Delivery.deleteMany({ order: req.body.order });
+
+  // 5- add order to delivery user
   let response;
   if (user.role === "delivery") {
     response = await Delivery.create(req.body);
   }
+  // 6- return response
   res.status(200).json(response);
 });
 
-
 // @desc    Change order delivery status
-// @route   GET  /api/v1/scanQRcodeOrder/:id
+// @route   POST  /api/v1/scanQRcodeOrder/:id
 // @access  protect (admin)
 exports.scanQRcodeOrder = async (req, res, next) => {
   // 1- get SSH from body and check if user has role delivery or not
   const SSH = crypto.createHash("sha512").update(req.body.SSH).digest("binary");
   const user = await User.findOne({ SSH });
 
-  if (!user || user.role !== "delivery" ) {
+  if (!user || user.role !== "delivery") {
     return next(new ApiError("the role of this user not delivery"));
   }
   const orderId = req.params.id;
@@ -66,3 +85,29 @@ exports.scanQRcodeOrder = async (req, res, next) => {
     msg: "Order status changed successfully",
   });
 };
+
+// @desc    add filter on handleFactory to get list of orders
+exports.deliveryGetOrdersFilter = (req, res, next) => {
+  req.body.filter = {
+    user: req.user._id,
+  };
+  next();
+};
+
+// @desc    get orders that delivery must delivered
+// @route   GET  /api/v1/delivery/getDeliveryOrders
+// @access  protect (delivery)
+exports.getDeliveryOrders = handleFactory.getListOfItems(Delivery, "delivery");
+
+// @desc   filter to get all user deliveries
+exports.getUserDeliveriesFilter = (req, res, next) => {
+  req.body.filter = {
+    role: "delivery",
+  };
+  next();
+};
+
+// @desc    get all user deliveries
+// @route   GET  /api/v1/delivery/getAllUserDeliveries
+// @access  protect (admin)
+exports.getAllUserDeliveries = handleFactory.getListOfItems(User, "user");

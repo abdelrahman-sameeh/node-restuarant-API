@@ -10,7 +10,7 @@ const orderSchema = mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.ObjectId,
-          ref: "Product",
+          ref: "Meal",
           price: Number,
           count: Number,
         },
@@ -33,8 +33,8 @@ const orderSchema = mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      default: "new",
-      enum: ["new", "inProgress", "inDeliver", "completed"],
+      default: "preparing",
+      enum: ["preparing", "inDeliver", "delivered"],
     },
     deliveryMethod: {
       type: Boolean,
@@ -55,33 +55,27 @@ const orderSchema = mongoose.Schema(
       default: false,
     },
     paidAt: Date,
+    delivery: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      default: undefined
+    },
   },
   { timestamps: true }
 );
 
 orderSchema.pre(/^find/, function (next) {
-  this.populate({ path: "address"})
+  this.populate({ path: "address" })
     .populate({ path: "user", select: "name email" })
-    .populate({ path: "orderItems.product", select: "title price" });
+    .populate({
+      path: "orderItems.product",
+      select: "title price image details",
+    });
 
   next();
 });
 
 
-orderSchema.post("init", function (doc) {
-  const qrImage = doc.qrImage
-  if (doc) {
-    doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
-  }
-});
-
-
-orderSchema.post("save", function (doc) {
-  const qrImage = doc.qrImage
-  if (doc) {
-    doc.qrImage = `${process.env.BASE_URL.slice(0, -1)}/src/uploads/QRs/${qrImage}`;
-  }
-});
 
 
 const Order = mongoose.model("Order", orderSchema);

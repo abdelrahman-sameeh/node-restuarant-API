@@ -4,10 +4,7 @@ const handleFactory = require("./handleFactory");
 const ApiError = require("../utils/ApiError");
 const ApiFeature = require("../utils/ApiFeature");
 
-exports.setUserIdInBody = (req, res, next) => {
-  req.body.user = req.user._id;
-  next();
-};
+
 
 // @desc    get list of addresses
 // @route   GET  /api/v1/address

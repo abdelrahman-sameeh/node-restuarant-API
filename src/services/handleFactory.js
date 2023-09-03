@@ -17,11 +17,18 @@ exports.getListOfItems = (Model, modelName) =>
       filter = req.body.filter;
     }
 
-    const documentCounts = await Model.countDocuments();
+    // get number of documents for this filter to send it to (apiFeature)
+    const docCount = new ApiFeature(Model.find(filter), req.query)
+    .filter()
+    .search()
+    .sort()
+    .limitFields();
+    const docCountMongooseQuery = docCount.mongooseQuery
+    const documentCounts = await docCountMongooseQuery
 
     const apiFeature = new ApiFeature(Model.find(filter), req.query)
       .filter()
-      .pagination(documentCounts)
+      .pagination(documentCounts.length)
       .search()
       .sort()
       .limitFields();
@@ -30,11 +37,6 @@ exports.getListOfItems = (Model, modelName) =>
 
     const response = await mongooseQuery;
 
-    if (response.length < 1) {
-      res.status(200).json({
-        msg: "no data match this filter",
-      });
-    }
 
     res.status(200).json({
       results: response.length,
