@@ -12,14 +12,14 @@ exports.addReviewValidator = [
     .withMessage("User is required")
     .isMongoId()
     .withMessage("Enter a valid user id ")
-    .custom(async (value) => {
+    .custom(async (value, {req}) => {
       // check if user exist
       const user = await User.findById(value);
       if (!user) {
         throw "User is not exist";
       }
       // check if user have more than one review
-      const review = await Review.findOne({ user: value });
+      const review = await Review.findOne({ user: value, meal: req.body.meal });
       if (review) {
         throw "User mustn't have more than one review";
       }

@@ -8,14 +8,13 @@ const {
   getLoggedUserOrders,
   deleteOrder,
   changeOrderStatus,
+  setFilterInGetUserOrders,
 } = require("../services/orderService");
 const { createOrderValidator } = require("../validator/orderValidator");
 
-router.route("/order").get(
-  AuthService.protect,
-  AuthService.allowTo('admin'),
-  getAllOrders
-);
+router
+  .route("/order")
+  .get(AuthService.protect, AuthService.allowTo("admin"), getAllOrders);
 
 router
   .route("/order/:id")
@@ -33,7 +32,7 @@ router
     AuthService.protect,
     AuthService.allowTo("admin", "delivery"),
     changeOrderStatus
-  )
+  );
 
 router.post(
   "/createCashOrder",
@@ -47,6 +46,7 @@ router.get(
   "/userOrders",
   AuthService.protect,
   AuthService.allowTo("user"),
+  setFilterInGetUserOrders,
   getLoggedUserOrders
 );
 

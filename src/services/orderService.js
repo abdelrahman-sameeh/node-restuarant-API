@@ -89,6 +89,14 @@ exports.createCashOrder = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json(order);
 });
 
+exports.setFilterInGetUserOrders = (req, res, next) => {
+  const filter = {
+    user: req.user._id,
+  };
+  req.body.filter = filter;
+  next()
+};
+
 // @desc    get logged user orders
 // @route   GET  /api/v1/userOrders
 // @access  private => user

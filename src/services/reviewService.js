@@ -13,10 +13,12 @@ exports.setFilterInBody = (req, res, next) => {
 };
 
 const calcRatingAvg = (reviews) => {
-  let result = reviews
-    .map((review) => review.rating)
-    .reduce((curr, acc) => curr + acc);
-  return result / reviews.length;
+  if (reviews.length) {
+    let result = reviews
+      .map((review) => review.rating)
+      .reduce((curr, acc) => curr + acc);
+    return result / reviews.length;
+  }
 };
 
 exports.addReview = expressAsyncHandler(async (req, res, next) => {

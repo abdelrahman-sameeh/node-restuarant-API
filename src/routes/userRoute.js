@@ -9,6 +9,8 @@ const {
   getOneUser,
   deleteUser,
   updateUserInfo,
+  activeAccount,
+  updateSSH,
 } = require("../services/userService");
 const AuthService = require("../services/authService");
 const {
@@ -47,10 +49,18 @@ router
   )
   .delete(
     AuthService.protect,
-    AuthService.allowTo("admin"),
+    AuthService.allowTo("admin", "user", 'delivery'),
     checkUserIDValidator,
     deleteUser
   );
+
+router.put(
+  "/activeAccount/:id",
+  AuthService.protect,
+  AuthService.allowTo("admin", "user", 'delivery'),
+  checkUserIDValidator,
+  activeAccount
+);
 
 // for user
 router.get("/user", AuthService.protect, getLoggedUser);
@@ -69,6 +79,15 @@ router.delete(
   AuthService.allowTo("user"),
   removeProductFromFavoriteValidator,
   deleteProductFromFavorite
+);
+
+
+
+router.put(
+  "/delivery/:id",
+  AuthService.protect,
+  AuthService.allowTo("admin", "delivery"),
+  updateSSH
 );
 
 router.post("/updateUserInfo", AuthService.protect, updateUserInfo);

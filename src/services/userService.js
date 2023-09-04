@@ -49,10 +49,26 @@ exports.deleteUser = expressAsyncHandler(async (req, res, next) => {
     return next(new ApiError("internal server error", 400));
   }
   res.status(200).json({
-    msg: "user delete successfully",
-    data: response,
+    msg: "Account deactivated successfully",
   });
 });
+
+
+
+exports.activeAccount = expressAsyncHandler(async (req, res, next) => {
+  const response = await User.findByIdAndUpdate(
+    req.params.id,
+    { isActive: true },
+    { new: true }
+  );
+  if (!response) {
+    return next(new ApiError("internal server error", 400));
+  }
+  res.status(200).json({
+    msg: "Account activated successfully",
+  });
+})
+
 
 // --------------------------------  USER  ------------------------------------
 
@@ -134,5 +150,46 @@ exports.updateUserInfo = expressAsyncHandler(async (req, res, next) => {
       role: response.role,
       phone: response.phone
     },
+  });
+});
+
+
+
+
+
+// @desc    update delivery
+// @route   PUT  /api/v1/delivery/:id
+// @access  protect (admin, delivery)
+exports.updateSSH = expressAsyncHandler(async (req, res, next) => {
+  // 1- get user check exist and role == 'delivery'
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError("No user match this ID"));
+  if (user && user.role !== "delivery")
+    return next(new ApiError("This user is not delivery"));
+
+  if (req.body.SSH && req.body.SSH.length < 4) {
+    return next(new ApiError("SSH must be more than 4 chars"));
+  }
+
+  if (req.user.role != "admin") {
+    const check = await bcrypt.compare(req.body.password, user.password);
+
+    if (!check) {
+      return next(new ApiError("Password is Incorrect"));
+    }
+  }
+
+  // 2- hashing SSH before send
+  const hash = await crypto
+    .createHash("sha512")
+    .update(req.body.SSH)
+    .digest("binary");
+
+  // 3- save data in database
+  user.SSH = hash;
+  await user.save();
+
+  res.status(200).json({
+    message: "SSH updated successfully",
   });
 });

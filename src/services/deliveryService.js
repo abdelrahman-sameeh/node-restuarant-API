@@ -29,10 +29,10 @@ exports.addOrderToDelivery = expressAsyncHandler(async (req, res, next) => {
   if (!order) {
     return next(new ApiError("No order match this id"));
   }
-  
-  // 3- set delivery user in order 
+
+  // 3- set delivery user in order
   order.delivery = req.body.user;
-  await order.save()
+  await order.save();
 
   // 4- delete order from all deliveries
   await Delivery.deleteMany({ order: req.body.order });
@@ -54,13 +54,23 @@ exports.scanQRcodeOrder = async (req, res, next) => {
   const SSH = crypto.createHash("sha512").update(req.body.SSH).digest("binary");
   const user = await User.findOne({ SSH });
 
-  if (!user || user.role !== "delivery") {
-    return next(new ApiError("the role of this user not delivery"));
+
+  if (!user) {
+    return next(new ApiError("SSH is incorrect", 400));
+  }
+
+  if (user.role !== "delivery") {
+    return next(new ApiError("the role of this user not delivery", 400));
   }
   const orderId = req.params.id;
 
+  
   // 2- check if this order for this delivery or not ---> if (true) update order status
   const order = await Delivery.findOne({ order: orderId, user: user._id });
+  
+  console.log(orderId);
+  console.log(user);
+
   if (!order) {
     return next(new ApiError("This delivery have no access for this user "));
   }
